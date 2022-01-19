@@ -44,11 +44,11 @@ namespace Coursework_1
             // [ For NACA code 12345 -> 1 = optimal CL at ideal AoA, 2 = position of max camber, 3 = camber reflex yes/no, 45 = max thickness ]
 
             string NACAcode = NACAtextBox.Text; //Reading NACA code from textbox to string variable
-            double maxCamber = 0;
-            double posCamber = 0;
-            double thickness = 0;
-            double optimalCL = 0;
-            int reflex = 0;
+            double maxCamber = new double();
+            double posCamber = new double();
+            double thickness = new double();
+            double optimalCL = new double();
+            int reflex = new int();
 
             if (NACAcode.Length == 4)   //Parsing NACA info for 4 digit
             {

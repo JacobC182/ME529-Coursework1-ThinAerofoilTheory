@@ -10,8 +10,8 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="OxyPlot.Core" Version="2.1.0" />
-    <PackageReference Include="OxyPlot.WindowsForms" Version="2.1.0" />
+    <PackageReference Include="ScottPlot" Version="4.1.31" />
+    <PackageReference Include="ScottPlot.WinForms" Version="4.1.31" />
   </ItemGroup>
 
 </Project>

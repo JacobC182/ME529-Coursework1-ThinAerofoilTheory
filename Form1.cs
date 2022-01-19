@@ -64,7 +64,7 @@ namespace Coursework_1
                 thickness = Convert.ToDouble(Convert.ToString(NACAcode[3]) + Convert.ToString(NACAcode[4])) / 100; //Get max thickness from last 2 digits of NACA code + divide by 100 for 0-1 chord range
             }
 
-            Plot4d(maxCamber, posCamber, thickness);
+            if (NACAcode.Length == 4) { Plot4d(maxCamber, posCamber, thickness); }
             
         }
 
@@ -124,7 +124,7 @@ namespace Coursework_1
             double[] yupper = new double[res];
             double[] xlower = new double[res];
             double[] ylower = new double[res];
-            double[] ychord = new double[res];
+            double[] ycamb = new double[res];
             double[] ysymm = new double[res];
 
             for (int i = 0; i < res; i++)
@@ -134,7 +134,7 @@ namespace Coursework_1
                 xlower[i] = coords[1];
                 yupper[i] = coords[2];
                 ylower[i] = coords[3];
-                ychord[i] = coords[4];
+                ycamb[i] = coords[4];
                 ysymm[i] = coords[5];
             }
 
@@ -142,11 +142,16 @@ namespace Coursework_1
 
             WingPlot.Plot.AddScatterLines(xupper, yupper, Color.Black);
             WingPlot.Plot.AddScatterLines(xlower, ylower, Color.Black);
-            WingPlot.Plot.AddScatterLines(xrange, ychord, Color.Blue);
+            if (NACAtextBox.Text[0] != '0' & NACAtextBox.Text[1] != '0') //Plot camber line  and symmetric shape if assymmetric
+            {
+                WingPlot.Plot.AddScatterLines(xrange, ycamb, Color.Blue);
+                WingPlot.Plot.AddScatterLines(xrange, ysymm, Color.Red);
+            } 
             WingPlot.Plot.AddScatterLines(xrange, yzero, Color.Black);
 
-            WingPlot.Plot.SetAxisLimitsX(-0.05, 1.01);
-            WingPlot.Plot.SetAxisLimitsY(-1, 1);
+            WingPlot.Plot.SetAxisLimitsX(-0.01, 1.01);
+            WingPlot.Plot.SetAxisLimitsY(-0.4, 0.4);
+            WingPlot.Plot.Title("NACA " + Convert.ToString(NACAtextBox.Text) + " Aerofoil");
 
             WingPlot.Refresh();
 

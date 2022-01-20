@@ -67,18 +67,18 @@ namespace Coursework_1
             //Valid 5 digit camber profile checks
             bool Valid5Digit = false;
             string[] profileList = { "210", "220", "230", "240", "250", "221", "231", "241", "251" };
-            foreach (string profile in profileList) { if (NACAcode[0..2] == profile) { Valid5Digit = true; break; } }
+            foreach (string profile in profileList) { if (NACAcode[0..3] == profile) { Valid5Digit = true; break; } }
 
-            if (!Valid5Digit & NACAcode.Length == 5) { MessageBox.Show("Your NACA 5 Digit Camber Profile is unavailable, the following camber profiles are available:\nNormal Camber:\n210\n220\n230\n240\n250\n\nReflex Camber:\n221\n231\n241\n251"); return; }
+            if (Valid5Digit == false & NACAcode.Length == 5) { MessageBox.Show("Your NACA 5 Digit Camber Profile is unavailable, the following camber profiles are available:\nNormal Camber:\n210\n220\n230\n240\n250\n\nReflex Camber:\n221\n231\n241\n251"); return; }
 
             //Plotting NACA profiles
             if (NACAcode.Length == 4) { Plot4d(maxCamber, posCamber, thickness); }
-            if (NACAcode.Length == 5) { Plot5d(maxCamber, posCamber, thickness, 5); }
+            if (NACAcode.Length == 5) { Plot5d(maxCamber, reflex, thickness); }
 
         }
 
         //Functions for returning aerofoil sections (4 digit)
-        private static double[] Coords_4d(double x, double m, double p, double t) //Symmetric 4digit NACA - returns list[]
+        private static double[] Coords_4d(double x, double m, double p, double t) //Coords 4digit NACA - returns list[]
             //x-coordinate, m-maximum camber, p-position of max camber
             //RETURNS list[length=6]
             //list[[0].x-upper, [1].x-lower, [2].y-upper, [3].y-lower, [4].y-chord, [5].y-symmetric] - CAMBERED
@@ -151,24 +151,25 @@ namespace Coursework_1
 
             WingPlot.Reset();
 
-            WingPlot.Plot.AddScatterLines(xupper, yupper, Color.Black);
+            WingPlot.Plot.AddScatterLines(xupper, yupper, Color.Black, label: "Aerofoil Profile");
             WingPlot.Plot.AddScatterLines(xlower, ylower, Color.Black);
             if (NACAtextBox.Text[0] != '0' & NACAtextBox.Text[1] != '0') //Plot camber line  and symmetric shape if assymmetric
             {
-                WingPlot.Plot.AddScatterLines(xrange, ycamb, Color.Blue);
-                WingPlot.Plot.AddScatterLines(xrange, ysymm, Color.Red);
+                WingPlot.Plot.AddScatterLines(xrange, ycamb, Color.Blue, label: "Camber Line");
+                WingPlot.Plot.AddScatterLines(xrange, ysymm, Color.Red, label: "Symmetric Shape");
             } 
-            WingPlot.Plot.AddScatterLines(xrange, yzero, Color.Black);
+            WingPlot.Plot.AddScatterLines(xrange, yzero, Color.Black, lineStyle: ScottPlot.LineStyle.Dash, label: "Chord");
 
             WingPlot.Plot.SetAxisLimitsX(-0.01, 1.01);
             WingPlot.Plot.SetAxisLimitsY(-0.4, 0.4);
             WingPlot.Plot.Title("NACA " + Convert.ToString(NACAtextBox.Text) + " Aerofoil");
+            WingPlot.Plot.Legend(Enabled = true);
 
             WingPlot.Refresh();
 
         }
         
-        private double[] Coords_5d(double x, double reflex, double t)
+        private double[] Coords_5d(double x, double reflex, double t) //Coords 5digit NACA - returns list[]
         {
             double[] Normal_pList = { 0.05, 0.1, 0.15, 0.2, 0.25 };
             double[] Normal_rList = { 0.058, 0.126, 0.2025, 0.29, 0.391 };
@@ -181,7 +182,7 @@ namespace Coursework_1
             string[] Normal_profileList = { "210", "220", "230", "240", "250" };
             string[] Reflex_profileList = { "221", "231", "241", "251" };
 
-            string profile = Convert.ToString(NACAtextBox.Text[0..2]);
+            string profile = Convert.ToString(NACAtextBox.Text[0..3]);
 
             
 
@@ -260,9 +261,56 @@ namespace Coursework_1
             return output;
         }
 
-        private static void Plot5d(double m, double reflex, double t)
+        private void Plot5d(double m, double reflex, double t) 
         {
+            int res = 250; //number of points to use for plotting - (resolution control)
+            //creating x linspace array
+            double[] xrange = new double[res];
+            double[] yzero = new double[res];
 
-        }
+            for (double i = 0; i < res; i++)
+            {
+                xrange[Convert.ToInt32(i)] = Convert.ToDouble(i / res);
+                yzero[Convert.ToInt32(i)] = 0;
+            }
+
+            double[] xupper = new double[res];
+            double[] yupper = new double[res];
+            double[] xlower = new double[res];
+            double[] ylower = new double[res];
+            double[] ycamb = new double[res];
+            double[] ysymm = new double[res];
+
+
+            for (int i = 0; i < res; i++)
+            {
+                double[] coords = Coords_5d(xrange[i], reflex, t);
+                xupper[i] = coords[0];
+                xlower[i] = coords[1];
+                yupper[i] = coords[2];
+                ylower[i] = coords[3];
+                ycamb[i] = coords[4];
+                ysymm[i] = coords[5];
+            }
+
+
+            WingPlot.Reset();
+
+            WingPlot.Plot.AddScatterLines(xupper, yupper, Color.Black, label: "Aerofoil Profile");
+            WingPlot.Plot.AddScatterLines(xlower, ylower, Color.Black);
+            if (NACAtextBox.Text[0] != '0' & NACAtextBox.Text[1] != '0') //Plot camber line  and symmetric shape if assymmetric
+            {
+                WingPlot.Plot.AddScatterLines(xrange, ycamb, Color.Blue, label: "Camber Line");
+                WingPlot.Plot.AddScatterLines(xrange, ysymm, Color.Red, label: "Symmetric Shape");
+            }
+            WingPlot.Plot.AddScatterLines(xrange, yzero, Color.Black, lineStyle: ScottPlot.LineStyle.Dash, label: "Chord");
+
+            WingPlot.Plot.SetAxisLimitsX(-0.01, 1.01);
+            WingPlot.Plot.SetAxisLimitsY(-0.4, 0.4);
+            WingPlot.Plot.Title("NACA " + Convert.ToString(NACAtextBox.Text) + " Aerofoil");
+            WingPlot.Plot.Legend(Enabled = true);
+
+            WingPlot.Refresh();
+        } 
     }
 }

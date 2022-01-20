@@ -59,7 +59,7 @@ namespace Coursework_1
             else if (NACAcode.Length == 5)  //Parsing NACA info for 5 digit
             {
                 optimalCL = double.Parse(Convert.ToString(NACAcode[0])) * 0.15;
-                maxCamber = double.Parse(Convert.ToString(NACAcode[1])) / 10;
+                posCamber = double.Parse(Convert.ToString(NACAcode[1])) * 0.05;
                 reflex = int.Parse(Convert.ToString(NACAcode[2]));
                 thickness = Convert.ToDouble(Convert.ToString(NACAcode[3]) + Convert.ToString(NACAcode[4])) / 100; //Get max thickness from last 2 digits of NACA code + divide by 100 for 0-1 chord range
             }
@@ -156,6 +156,37 @@ namespace Coursework_1
             WingPlot.Refresh();
 
         }
+        
+        private double[] coords_5d(double x, double cli, double pos, double reflex, double t)
+        {
+            double[] Normal_pList = { 0.05, 0.1, 0.15, 0.2, 0.25 };
+            double[] Normal_rList = { 0.058, 0.126, 0.2025, 0.29, 0.391 };
+            double[] Normal_k1List = { 361.4, 51.64, 15.957, 6.643, 3.23 };
+            double[] Reflex_pList = { 0.1, 0.15, 0.2, 0.25 };
+            double[] Reflex_rList = { 0.13, 0.217, 0.318, 0.441 };
+            double[] Reflex_k1List = { 51.99, 15.793, 6.52, 3.191 };
+            double[] Reflex_k21List = { 0.000764, 0.00677, 0.0303, 0.1355 };
 
+            string[] Normal_profileList = { "210", "220", "230", "240", "250" };
+            string[] Reflex_profileList = { "221", "231", "241", "251" };
+
+            string profile = Convert.ToString(NACAtextBox.Text[0..2]);
+
+            double p = new double();
+            double r = new double();
+            double k1 = new double();
+            double k21 = new double();
+
+            if (reflex == 0)
+            {
+                for (int i = 0; i < 5; i++)
+                {
+                    if (profile == Normal_profileList[i])
+                    {
+
+                    }
+                }
+            }
+        }
     }
 }

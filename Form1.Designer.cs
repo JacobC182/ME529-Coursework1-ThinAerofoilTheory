@@ -131,11 +131,11 @@
             // label3
             // 
             this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(808, 152);
+            this.label3.Location = new System.Drawing.Point(767, 152);
             this.label3.Name = "label3";
-            this.label3.Size = new System.Drawing.Size(38, 15);
+            this.label3.Size = new System.Drawing.Size(79, 15);
             this.label3.TabIndex = 10;
-            this.label3.Text = "label3";
+            this.label3.Text = "Zero-Lift AoA";
             // 
             // label4
             // 

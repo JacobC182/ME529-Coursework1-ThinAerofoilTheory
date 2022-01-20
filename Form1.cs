@@ -1,3 +1,17 @@
+//*******************************************************************
+//TO DO LIST:
+//1. Implement solving of aerofoil data to display function
+//2. Implement Thin aerofoil theory to calculate and display
+//3. Refactor Plotting function to be its own independant universal function
+//4. Refactor Input validation to be its own independant function
+//5. Refactor NACA code parsing into its own independant function
+//6. Add Comment lines to entire project
+//7. Clean/Tidy the UI and spice it up a bit
+//8. Refactor Coords_4d/5d to one universal coordinate solving function
+//9. Design universal parameter passing system to easily move data between functions using arrays
+//10.Design UI system that changes the UI to display different data for the appropriate NACA code
+//11.Move as many functions to object oriented system as possible! - Solver, Coords, Plotting, etc.
+//*******************************************************************
 namespace Coursework_1
 {
     public partial class Form1 : Form
@@ -72,6 +86,7 @@ namespace Coursework_1
             if (Valid5Digit == false & NACAcode.Length == 5) { MessageBox.Show("Your NACA 5 Digit Camber Profile is unavailable, the following camber profiles are available:\nNormal Camber:\n210\n220\n230\n240\n250\n\nReflex Camber:\n221\n231\n241\n251"); return; }
 
             //Plotting NACA profiles
+
             if (NACAcode.Length == 4) { Plot4d(maxCamber, posCamber, thickness); }
             if (NACAcode.Length == 5) { Plot5d(maxCamber, reflex, thickness); }
 
@@ -311,6 +326,12 @@ namespace Coursework_1
             WingPlot.Plot.Legend(Enabled = true);
 
             WingPlot.Refresh();
-        } 
+        }
+
+        private void Calc (string NACA)
+        {
+
+        }
+
     }
 }

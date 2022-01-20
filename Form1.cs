@@ -44,11 +44,11 @@ namespace Coursework_1
             // [ For NACA code 12345 -> 1 = optimal CL at ideal AoA, 2 = position of max camber, 3 = camber reflex yes/no, 45 = max thickness ]
 
             string NACAcode = NACAtextBox.Text; //Reading NACA code from textbox to string variable
-            double maxCamber = new double();
-            double posCamber = new double();
-            double thickness = new double();
-            double optimalCL = new double();
-            int reflex = new int();
+            double maxCamber = new();
+            double posCamber = new();
+            double thickness = new();
+            double optimalCL = new();
+            int reflex = new();
 
             if (NACAcode.Length == 4)   //Parsing NACA info for 4 digit
             {
@@ -64,12 +64,21 @@ namespace Coursework_1
                 thickness = Convert.ToDouble(Convert.ToString(NACAcode[3]) + Convert.ToString(NACAcode[4])) / 100; //Get max thickness from last 2 digits of NACA code + divide by 100 for 0-1 chord range
             }
 
+            //Valid 5 digit camber profile checks
+            bool Valid5Digit = false;
+            string[] profileList = { "210", "220", "230", "240", "250", "221", "231", "241", "251" };
+            foreach (string profile in profileList) { if (NACAcode[0..2] == profile) { Valid5Digit = true; break; } }
+
+            if (!Valid5Digit & NACAcode.Length == 5) { MessageBox.Show("Your NACA 5 Digit Camber Profile is unavailable, the following camber profiles are available:\nNormal Camber:\n210\n220\n230\n240\n250\n\nReflex Camber:\n221\n231\n241\n251"); return; }
+
+            //Plotting NACA profiles
             if (NACAcode.Length == 4) { Plot4d(maxCamber, posCamber, thickness); }
-            
+            if (NACAcode.Length == 5) { Plot5d(maxCamber, posCamber, thickness, 5); }
+
         }
 
-        //Functions for returning aerofoil sections
-        private static double[] coords_4d(double x, double m, double p, double t) //Symmetric 4digit NACA - returns list[]
+        //Functions for returning aerofoil sections (4 digit)
+        private static double[] Coords_4d(double x, double m, double p, double t) //Symmetric 4digit NACA - returns list[]
             //x-coordinate, m-maximum camber, p-position of max camber
             //RETURNS list[length=6]
             //list[[0].x-upper, [1].x-lower, [2].y-upper, [3].y-lower, [4].y-chord, [5].y-symmetric] - CAMBERED
@@ -77,8 +86,8 @@ namespace Coursework_1
         {
             double yt =  5 * t * (0.2969 * Math.Sqrt(x) - 0.126 * x - 0.3516 * x * x + 0.2843 * x * x * x - 0.1036 * x * x * x * x); //symmetric thickness/shape y value
     
-            double yc = 0; //cambered wing camber line
-            double dy = 0; //dyc/dx
+            double yc = new(); //cambered wing camber line
+            double dy = new(); //dyc/dx
 
             double[] output = Array.Empty<double>();
             
@@ -127,9 +136,10 @@ namespace Coursework_1
             double[] ycamb = new double[res];
             double[] ysymm = new double[res];
 
+
             for (int i = 0; i < res; i++)
             {
-                double[] coords = coords_4d(xrange[i], m, p, t);
+                double[] coords = Coords_4d(xrange[i], m, p, t);
                 xupper[i] = coords[0];
                 xlower[i] = coords[1];
                 yupper[i] = coords[2];
@@ -137,6 +147,7 @@ namespace Coursework_1
                 ycamb[i] = coords[4];
                 ysymm[i] = coords[5];
             }
+           
 
             WingPlot.Reset();
 
@@ -157,7 +168,7 @@ namespace Coursework_1
 
         }
         
-        private double[] coords_5d(double x, double cli, double pos, double reflex, double t)
+        private double[] Coords_5d(double x, double reflex, double t)
         {
             double[] Normal_pList = { 0.05, 0.1, 0.15, 0.2, 0.25 };
             double[] Normal_rList = { 0.058, 0.126, 0.2025, 0.29, 0.391 };
@@ -172,10 +183,12 @@ namespace Coursework_1
 
             string profile = Convert.ToString(NACAtextBox.Text[0..2]);
 
-            double p = new double();
-            double r = new double();
-            double k1 = new double();
-            double k21 = new double();
+            
+
+            double p = new();
+            double r = new();
+            double k1 = new();
+            double k21 = new();
 
             if (reflex == 0)
             {
@@ -183,10 +196,73 @@ namespace Coursework_1
                 {
                     if (profile == Normal_profileList[i])
                     {
+                        p = Normal_pList[i];
+                        r = Normal_rList[i];
+                        k1 = Normal_k1List[i];
 
+                        break;
                     }
                 }
             }
+            else if (reflex == 1)
+            {
+                for (int i = 0; i < 4; i++)
+                {
+                    if (profile == Reflex_profileList[i])
+                    {
+                        p = Reflex_pList[i];
+                        r = Reflex_rList[i];
+                        k1 = Reflex_k1List[i];
+                        k21 = Reflex_k21List[i];
+
+                        break;
+                    }
+                }
+            }
+
+            double chord = 1;
+
+            double yc = new();
+            double dyc = new();
+
+            if (reflex == 0)
+            {
+                if (x < r) 
+                {
+                    yc = (k1 / 6) * (x * x * x - 3 * r * x * x + r * r * (3 - r) * x);
+                    dyc = (k1 / 6) * (3 * x * x - 6 * r * x + r * r * (3 - r));
+
+                }
+                else 
+                { 
+                    yc = ((k1 * r * r * r) / 6) * (1 - x);
+                    dyc = ((-k1 * r * r * r) / 6);
+                }
+            }
+            else if (reflex == 1)
+            {
+                if (x/chord <= r)
+                {
+                    yc = chord * (k1 / 6) * ((Math.Pow((x / chord) - r, 3) - k21 * Math.Pow(1 - r, 3) * (x / chord) - r * r * r * (x / chord) + r * r * r));
+                    dyc = (k1 / 6) * ((3 * Math.Pow((x / chord) - r, 2) - k21 * Math.Pow(1 - r, 3) - r * r * r));
+                }
+                else
+                {
+                    yc = chord * (k1 / 6) * (k21 * (Math.Pow((x / chord) - r, 3) - k21 * Math.Pow(1 - r, 3) * (x / chord) - r * r * r * (x / chord) + r * r * r));
+                    dyc = (k1 / 6) * ((3 * k21) * (Math.Pow((x / chord) - r, 2) - k21 * Math.Pow(1 - r, 3) - r * r * r));
+                }
+            }
+            double yt = 5 * t * (0.2969 * Math.Sqrt(x) - 0.126 * x - 0.3516 * x * x + 0.2843 * x * x * x - 0.1036 * x * x * x * x); //symmetric thickness/shape y value
+
+            double theta = Math.Atan(dyc); //Calculating theta angle FOR ASYMMETRIC wings
+
+            double[] output = new double[6] { x - yt * Math.Sin(theta), x + yt * Math.Sin(theta), yc + yt * Math.Cos(theta), yc - yt * Math.Cos(theta), yc, yt }; //output list
+            return output;
+        }
+
+        private static void Plot5d(double m, double reflex, double t)
+        {
+
         }
     }
 }

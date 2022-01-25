@@ -333,5 +333,28 @@ namespace Coursework_1
 
         }
 
+        public class NACA_Parse //NACA aerofoil code parsing class
+        {
+            public string NACA { get; set; } //NACA CODE string property
+
+            public NACA_Parse(string NACA_code = "0012") //Constructor - takes in naca code (default 0012)
+            {
+                NACA = NACA_code;
+            }
+
+            public bool Valid() //NACA Code validation
+            {
+                try { Convert.ToInt32(NACA); }
+
+                catch (Exception) { return false; }
+
+                if (NACA.Length != 4 && NACA.Length != 5) { MessageBox.Show("Please enter a valid NACA aerofoil code"); return false; }
+                if (NACA[0] == '0' && NACA[1] != '0') { MessageBox.Show("Please enter a valid NACA aerofoil code"); return false; }
+                if (NACA[0] != '0' && NACA[1] == '0') { MessageBox.Show("Please enter a valid NACA aerofoil code"); return false; }
+
+                return true;
+            }
+        }
+
     }
 }

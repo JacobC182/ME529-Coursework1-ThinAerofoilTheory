@@ -33,19 +33,15 @@ namespace Coursework_1
 
         private void SolveButton_Click(object sender, EventArgs e)
         {
+            NACA_Parse NACA1 = new NACA_Parse(NACAtextBox.Text);
+
+            //NACA code input validation
+            if (NACA1.Valid() == false) { return; }
+
+
             //Input and settings validation
             //Solver selected validation - must have one box selected
             if (AnalyticalSolveButton.Checked == false && NumericalSolveButton.Checked == false) { MessageBox.Show("Please Choose a Solver method!"); return; }
-
-            //NACA code input validation
-            //validation-must be an integer of length 4 or 5
-            try { Convert.ToInt32(NACAtextBox.Text); }
-
-            catch (Exception) { MessageBox.Show("Please enter a valid NACA aerofoil code"); return; }
-
-            if (NACAtextBox.Text.Length != 4 && NACAtextBox.Text.Length != 5) { MessageBox.Show("Please enter a valid NACA aerofoil code"); return; }
-            if (NACAtextBox.Text[0] == '0' && NACAtextBox.Text[1] != '0') { MessageBox.Show("Please enter a valid NACA aerofoil code"); return; }
-            if (NACAtextBox.Text[0] != '0' && NACAtextBox.Text[1] == '0') { MessageBox.Show("Please enter a valid NACA aerofoil code"); return; }
 
             //Angle of attack validation
             //validation-must be a float
@@ -77,13 +73,6 @@ namespace Coursework_1
                 reflex = int.Parse(Convert.ToString(NACAcode[2]));
                 thickness = Convert.ToDouble(Convert.ToString(NACAcode[3]) + Convert.ToString(NACAcode[4])) / 100; //Get max thickness from last 2 digits of NACA code + divide by 100 for 0-1 chord range
             }
-
-            //Valid 5 digit camber profile checks
-            bool Valid5Digit = false;
-            string[] profileList = { "210", "220", "230", "240", "250", "221", "231", "241", "251" };
-            foreach (string profile in profileList) { if (NACAcode[0..3] == profile) { Valid5Digit = true; break; } }
-
-            if (Valid5Digit == false & NACAcode.Length == 5) { MessageBox.Show("Your NACA 5 Digit Camber Profile is unavailable, the following camber profiles are available:\nNormal Camber:\n210\n220\n230\n240\n250\n\nReflex Camber:\n221\n231\n241\n251"); return; }
 
             //Plotting NACA profiles
 
@@ -328,11 +317,6 @@ namespace Coursework_1
             WingPlot.Refresh();
         }
 
-        private void Calc (string NACA)
-        {
-
-        }
-
         public class NACA_Parse //NACA aerofoil code parsing class
         {
             public string NACA { get; set; } //NACA CODE string property
@@ -342,18 +326,53 @@ namespace Coursework_1
                 NACA = NACA_code;
             }
 
-            public bool Valid() //NACA Code validation
+            public bool Valid() //NACA Code Validation method
+                //Encapsulates error message boxes also
             {
+                //checks - valid int, length, 4digit symmetrically valid, 5digit camber-line valid
+
+                //Error Message Strings + List of 5-digit available camber profiles
+                string NACA_error = "Please enter a valid NACA aerofoil code";
+                string CamberLine_error = "Your NACA 5 Digit Camber Profile is unavailable, the following camber profiles are available:\nNormal Camber:\n210\n220\n230\n240\n250\n\nReflex Camber:\n221\n231\n241\n251";
+                string[] profileList = { "210", "220", "230", "240", "250", "221", "231", "241", "251" };
+
+                //Checking if input is valid number sequence (valid int check)
                 try { Convert.ToInt32(NACA); }
+                catch (Exception) { MessageBox.Show(NACA_error); return false; }
 
-                catch (Exception) { return false; }
+                //Checking if length is valid (string length 4 or 5)
+                if (NACA.Length != 4 && NACA.Length != 5) { MessageBox.Show(NACA_error); return false; }
 
-                if (NACA.Length != 4 && NACA.Length != 5) { MessageBox.Show("Please enter a valid NACA aerofoil code"); return false; }
-                if (NACA[0] == '0' && NACA[1] != '0') { MessageBox.Show("Please enter a valid NACA aerofoil code"); return false; }
-                if (NACA[0] != '0' && NACA[1] == '0') { MessageBox.Show("Please enter a valid NACA aerofoil code"); return false; }
+                if (NACA.Length == 4) //4digit validity check (cant have first two digits without agreeing zero or nonzero)
+                {
+                    if (NACA[0] == '0' && NACA[1] != '0') { MessageBox.Show(NACA_error); return false; }
+                    if (NACA[0] != '0' && NACA[1] == '0') { MessageBox.Show(NACA_error); return false; }
+                }
+                
+                if (NACA.Length == 5) //validation for 5 digit
+                {
+                    bool Valid5Digit = false;
+                    //Checking if 5digit camber line profile matches in available list with validity check variable Valid5digit
+                    foreach (string profile in profileList) { if (NACA[0..3] == profile) { Valid5Digit = true; break; } }
+
+                    if (Valid5Digit == false) { MessageBox.Show(CamberLine_error); return false; } //5digit camber error message
+
+                }
 
                 return true;
             }
+            /*
+            public double[] Parse() //NACA Code Parser method - ASSUMES VALID!!!
+            {
+                int len = new();
+
+                if (NACA.Length == 4) //4digit parsing routine
+                {
+                    len = 4;
+                }
+                
+            }
+            */
         }
 
     }

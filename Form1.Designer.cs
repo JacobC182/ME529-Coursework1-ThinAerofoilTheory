@@ -44,7 +44,9 @@
             this.textBox5 = new System.Windows.Forms.TextBox();
             this.label6 = new System.Windows.Forms.Label();
             this.textBox6 = new System.Windows.Forms.TextBox();
-            this.WingPlot = new ScottPlot.FormsPlot();
+            this.panel1 = new System.Windows.Forms.Panel();
+            this.label7 = new System.Windows.Forms.Label();
+            this.AoARenderCheckBox = new System.Windows.Forms.CheckBox();
             this.SuspendLayout();
             // 
             // SolveButton
@@ -90,7 +92,7 @@
             // 
             // InfoButton
             // 
-            this.InfoButton.Location = new System.Drawing.Point(962, 386);
+            this.InfoButton.Location = new System.Drawing.Point(962, 497);
             this.InfoButton.Name = "InfoButton";
             this.InfoButton.Size = new System.Drawing.Size(69, 52);
             this.InfoButton.TabIndex = 5;
@@ -185,20 +187,41 @@
             this.textBox6.Size = new System.Drawing.Size(100, 23);
             this.textBox6.TabIndex = 15;
             // 
-            // WingPlot
+            // panel1
             // 
-            this.WingPlot.Location = new System.Drawing.Point(13, 15);
-            this.WingPlot.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
-            this.WingPlot.Name = "WingPlot";
-            this.WingPlot.Size = new System.Drawing.Size(710, 536);
-            this.WingPlot.TabIndex = 17;
+            this.panel1.Location = new System.Drawing.Point(12, 15);
+            this.panel1.Name = "panel1";
+            this.panel1.Size = new System.Drawing.Size(558, 520);
+            this.panel1.TabIndex = 18;
+            this.panel1.Paint += new System.Windows.Forms.PaintEventHandler(this.panel1_Paint);
+            // 
+            // label7
+            // 
+            this.label7.AutoSize = true;
+            this.label7.Location = new System.Drawing.Point(816, 386);
+            this.label7.Name = "label7";
+            this.label7.Size = new System.Drawing.Size(30, 15);
+            this.label7.TabIndex = 19;
+            this.label7.Text = "AoA";
+            // 
+            // AoARenderCheckBox
+            // 
+            this.AoARenderCheckBox.AutoSize = true;
+            this.AoARenderCheckBox.Location = new System.Drawing.Point(852, 386);
+            this.AoARenderCheckBox.Name = "AoARenderCheckBox";
+            this.AoARenderCheckBox.Size = new System.Drawing.Size(115, 19);
+            this.AoARenderCheckBox.TabIndex = 20;
+            this.AoARenderCheckBox.Text = "Render with AoA";
+            this.AoARenderCheckBox.UseVisualStyleBackColor = true;
             // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(1043, 563);
-            this.Controls.Add(this.WingPlot);
+            this.ClientSize = new System.Drawing.Size(1044, 561);
+            this.Controls.Add(this.AoARenderCheckBox);
+            this.Controls.Add(this.label7);
+            this.Controls.Add(this.panel1);
             this.Controls.Add(this.label6);
             this.Controls.Add(this.textBox6);
             this.Controls.Add(this.label5);
@@ -215,6 +238,7 @@
             this.Controls.Add(this.NumericalSolveButton);
             this.Controls.Add(this.AnalyticalSolveButton);
             this.Controls.Add(this.SolveButton);
+            this.MinimumSize = new System.Drawing.Size(1060, 600);
             this.Name = "Form1";
             this.Text = "Form1";
             this.Load += new System.EventHandler(this.Form1_Load);
@@ -241,6 +265,8 @@
         private TextBox textBox5;
         private Label label6;
         private TextBox textBox6;
-        private ScottPlot.FormsPlot WingPlot;
+        private Panel panel1;
+        private Label label7;
+        private CheckBox AoARenderCheckBox;
     }
 }

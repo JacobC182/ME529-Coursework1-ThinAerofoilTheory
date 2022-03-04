@@ -9,9 +9,4 @@
     <ImplicitUsings>enable</ImplicitUsings>
   </PropertyGroup>
 
-  <ItemGroup>
-    <PackageReference Include="ScottPlot" Version="4.1.31" />
-    <PackageReference Include="ScottPlot.WinForms" Version="4.1.31" />
-  </ItemGroup>
-
 </Project>

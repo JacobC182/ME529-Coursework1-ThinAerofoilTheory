@@ -498,8 +498,6 @@ namespace Coursework_1
         //Calculation Routine
         public void ThinAerofoilSolve(bool IsNumerical, bool Is4Digit, double[] xrange, double[] ycamb)
         {
-
-            double lim = Math.Acos(1 - 2 * Convert.ToDouble(Convert.ToString(NACAtextBox.Text[1])) / 10);
             double angleDeg = Convert.ToDouble(Convert.ToString(AttackAngletextBox.Text));
             //Convert to radians
             double angle = angleDeg * Math.PI / 180;
@@ -517,6 +515,8 @@ namespace Coursework_1
             {
                 if (Is4Digit) //4digit analytical solve
                 {
+                    double lim = Math.Acos(1 - 2 * Convert.ToDouble(Convert.ToString(NACAtextBox.Text[1])) / 10);
+
                     double m = Convert.ToDouble(Convert.ToString(NACAtextBox.Text[0])) / 100;
                     double p = Convert.ToDouble(Convert.ToString(NACAtextBox.Text[1])) / 10;
 
@@ -541,6 +541,30 @@ namespace Coursework_1
 
                     ZeroAngletextBox.Text = Convert.ToString((180/Math.PI) * zeroAngle);
                 }
+
+                if (!Is4Digit) //5digit analytical solve
+                {
+                    string profile = NACAtextBox.Text[0..3];
+
+                    double[] Avalues = Asolver.naca5digit(profile);
+
+                    double A0 = Avalues[0]; double A1 = Avalues[1]; double A2 = Avalues[2];
+
+                    double CL = Math.PI * (2 * A0 + A1);
+
+                    textBox2.Text = Convert.ToString(CL); //CL
+                    textBox1.Text = Convert.ToString(-Math.PI * 0.5 * (A0 + A1 - A2 / 2)); //CM LE
+                    textBox7.Text = Convert.ToString(-Math.PI * 0.25 * (A1 - A2)); //CM AC
+                    textBox3.Text = Convert.ToString(Asolver.naca5dLimit); //integration limit
+
+                    textBox4.Text = Convert.ToString(A0); //A0
+                    textBox5.Text = Convert.ToString(A1); //A1
+                    textBox6.Text = Convert.ToString(A2); //A2
+
+                    double zeroAngle = (angle - A0) - A1 / 2;
+
+                    ZeroAngletextBox.Text = Convert.ToString((180 / Math.PI) * zeroAngle);
+                }
             }
 
 
@@ -551,6 +575,8 @@ namespace Coursework_1
         {
             //AoA property
             public double AoA { get; set; }
+
+            public double naca5dLimit { get; set; } 
 
             //Constructor
             public AnalyticalSolver(double angleOfAttack = 0)
@@ -609,9 +635,8 @@ namespace Coursework_1
                 return (2 / Math.PI) * (naca4digitA2Fore(m, p, limit) - naca4digitA2Fore(m, p, 0)) + (2 / Math.PI) * (naca4digitA2Aft(m, p, Math.PI) - naca4digitA2Aft(m, p, limit));
             }
 
-            public double naca5digitA0(double m, double p, double limit)
+            public double[] naca5digit(string profile)
             {
-                double[] Normal_pList = { 0.05, 0.1, 0.15, 0.2, 0.25 };
                 double[] Normal_rList = { 0.058, 0.126, 0.2025, 0.29, 0.391 };
                 double[] Normal_k1List = { 361.4, 51.64, 15.957, 6.643, 3.23 };
                 double[] Reflex_pList = { 0.1, 0.15, 0.2, 0.25 };
@@ -619,14 +644,130 @@ namespace Coursework_1
                 double[] Reflex_k1List = { 51.99, 15.793, 6.52, 3.191 };
                 double[] Reflex_k21List = { 0.000764, 0.00677, 0.0303, 0.1355 };
 
-                double naca5digitA0Fore(double m, double p, double x)
+                string[] Normal_profileList = { "210", "220", "230", "240", "250" };
+                string[] Reflex_profileList = { "221", "231", "241", "251" };
+
+                double r = new();
+                double k = new();
+                double k21 = new();
+
+                int reflex = 0;
+                if (Convert.ToString(profile[2]) == "1") { reflex = 1; }
+
+                if (reflex == 0)
                 {
-                    return 0;
+                    for (int i = 0; i < 5; i++)
+                    {
+                        if (profile == Normal_profileList[i])
+                        {
+                            r = Normal_rList[i];
+                            k = Normal_k1List[i];
+
+                            break;
+                        }
+                    }
+                }
+                else if (reflex == 1)
+                {
+                    for (int i = 0; i < 4; i++)
+                    {
+                        if (profile == Reflex_profileList[i])
+                        {
+                            r = Reflex_rList[i];
+                            k = Reflex_k1List[i];
+                            k21 = Reflex_k21List[i];
+
+                            break;
+                        }
+                    }
                 }
 
-                return 0;
+                double limit = Math.Acos(1 - 2 * r);
+                naca5dLimit = limit;
+
+
+                double A = k / 8 - (k * r) / 2 + (k * r * r * (3 - r)) / 6;
+                double B = (k * r) / 2 - k / 4;
+                double C = k / 8;
+                double D = (-k * r * r * r) / 6;
+
+                double naca5digitA0(double x)
+                {
+                    double naca5digitA0ForeNormal(double x)
+                    {
+                        return A * x + B * Math.Sin(x) + C * (x / 2 + 0.25 * Math.Sin(2 * x));
+                    }
+
+                    double naca5digitA0AftNormal(double x)
+                    {
+                        return D * x;
+                    }
+
+                    if (reflex == 0)
+                    {
+                        return AoA - (1/Math.PI) * ((naca5digitA0ForeNormal(x) - naca5digitA0ForeNormal(0)) + (naca5digitA0AftNormal(Math.PI) - naca5digitA0AftNormal(x)));
+                    }
+                    return 0; //chungus
+                }
+
+                double naca5digitA1(double x)
+                {
+                    double naca5digitA1ForeNormal(double x)
+                    {
+                        return A * Math.Sin(x) + B * (x / 2 + Math.Sin(2 * x) / 4) + C * (Math.Sin(x) - Math.Pow(Math.Sin(x), 3) / 3);
+                    }
+
+                    double naca5digitA1AftNormal(double x)
+                    {
+                        return D * Math.Sin(x);
+                    }
+
+                    if (reflex == 0)
+                    {
+                        return (2 / Math.PI) * ((naca5digitA1ForeNormal(x) - naca5digitA1ForeNormal(0)) + (naca5digitA1AftNormal(Math.PI) - naca5digitA1AftNormal(x)));
+                    }
+                    else return 0; //chungus
+                }
+
+
+                double naca5digitA2(double x)
+                {
+                    double naca5digitA2ForeNormal(double x)
+                    {
+                        return A * Math.Sin(2 * x) / 2 + B * (Math.Sin(3 * x) / 6 + Math.Sin(x) / 2) + C * (x / 4 + Math.Sin(2 * x) / 4 + Math.Sin(4 * x) / 16);
+                    }
+
+                    double naca5digitA2AftNormal(double x)
+                    {
+                        return D * Math.Sin(2 * x) / 2;
+                    }
+
+                    if (reflex == 0)
+                    {
+                        return (2 / Math.PI) * ((naca5digitA2ForeNormal(x) - naca5digitA2ForeNormal(0)) + (naca5digitA2AftNormal(Math.PI) - naca5digitA2AftNormal(x)));
+                    }
+                    else return 0; //chungus
+                }
+
+                //ending return A cofficient list
+                double[] Aarray = {naca5digitA0(limit), naca5digitA1(limit), naca5digitA2(limit)};
+
+                return Aarray;
             }
         }
 
+        private void NumericalSolveButton_CheckedChanged(object sender, EventArgs e)
+        {
+            if (NumericalSolveButton.Checked == true)
+            {
+                label25.Visible = true;
+                textBox8.Visible = true;
+            }
+            else
+            {
+                label25.Visible = false;
+                textBox8.Visible = false;
+            }
+        }
     }
 }

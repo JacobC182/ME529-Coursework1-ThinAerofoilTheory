@@ -68,6 +68,8 @@
             this.textBox3 = new System.Windows.Forms.TextBox();
             this.label24 = new System.Windows.Forms.Label();
             this.textBox7 = new System.Windows.Forms.TextBox();
+            this.label25 = new System.Windows.Forms.Label();
+            this.textBox8 = new System.Windows.Forms.TextBox();
             this.SuspendLayout();
             // 
             // SolveButton
@@ -101,6 +103,7 @@
             this.NumericalSolveButton.TabStop = true;
             this.NumericalSolveButton.Text = "Numerical Solver";
             this.NumericalSolveButton.UseVisualStyleBackColor = true;
+            this.NumericalSolveButton.CheckedChanged += new System.EventHandler(this.NumericalSolveButton_CheckedChanged);
             // 
             // label1
             // 
@@ -441,11 +444,32 @@
             this.textBox7.Size = new System.Drawing.Size(100, 23);
             this.textBox7.TabIndex = 45;
             // 
+            // label25
+            // 
+            this.label25.AutoSize = true;
+            this.label25.Location = new System.Drawing.Point(574, 72);
+            this.label25.Name = "label25";
+            this.label25.Size = new System.Drawing.Size(112, 30);
+            this.label25.TabIndex = 47;
+            this.label25.Text = "No. of subdivisions\r\nfor numerical solver";
+            this.label25.Visible = false;
+            // 
+            // textBox8
+            // 
+            this.textBox8.Location = new System.Drawing.Point(603, 105);
+            this.textBox8.Name = "textBox8";
+            this.textBox8.Size = new System.Drawing.Size(46, 23);
+            this.textBox8.TabIndex = 48;
+            this.textBox8.Text = "2";
+            this.textBox8.Visible = false;
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(884, 721);
+            this.Controls.Add(this.textBox8);
+            this.Controls.Add(this.label25);
             this.Controls.Add(this.label24);
             this.Controls.Add(this.textBox7);
             this.Controls.Add(this.label7);
@@ -537,5 +561,7 @@
         private TextBox textBox3;
         private Label label24;
         private TextBox textBox7;
+        private Label label25;
+        private TextBox textBox8;
     }
 }

@@ -756,6 +756,14 @@ namespace Coursework_1
             }
         }
 
+
+        //NumericalSolver Class - contains all functions for solving numerically with simpsons rule
+        public class NumericalSolver
+        {
+
+        }
+
+
         private void NumericalSolveButton_CheckedChanged(object sender, EventArgs e)
         {
             if (NumericalSolveButton.Checked == true)

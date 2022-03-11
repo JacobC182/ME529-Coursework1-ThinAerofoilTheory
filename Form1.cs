@@ -45,6 +45,22 @@ namespace Coursework_1
                 MessageBox.Show("Please enter an Angle of Attack between -90 and 90 degrees"); return;
             }
 
+            //Simpsons Rule number of points Input Validation
+
+            if (NumericalSolveButton.Checked == true)
+            {
+                try { int UnusedNPoints = Convert.ToInt32(textBox8.Text); }
+                catch (Exception) { MessageBox.Show("Please enter a valid number of points for Integration"); return; }
+
+                if (Int32.Parse(textBox8.Text) > 5000 || Int32.Parse(textBox8.Text) < 2 || Int32.Parse(textBox8.Text) % 2 != 0)
+                {
+                    MessageBox.Show("Please enter an EVEN integration number of points between 2 and 5000"); return;
+                }
+            }
+            
+
+            
+
             //Parsing NACA wing code
             // [ For NACA code 1234 -> 1 = max camber as % of chord, 2 = position of max camber as chord/10, 34 = max thickness as % of chord ]
             // [ For NACA code 12345 -> 1 = optimal CL at ideal AoA, 2 = position of max camber, 3 = camber reflex yes/no, 45 = max thickness ]
@@ -508,6 +524,67 @@ namespace Coursework_1
             if (IsNumerical)
             {
 
+                int nP = Convert.ToInt32(textBox8.Text);
+
+                if (Is4Digit) //4digit numerical solve routine
+                {
+                    NumericalSolver Nsolver = new NumericalSolver(angle, nP);
+
+                    Nsolver.m = Convert.ToDouble(Convert.ToString(NACAtextBox.Text[0])) / 100;
+                    Nsolver.p = Convert.ToDouble(Convert.ToString(NACAtextBox.Text[1])) / 10;
+
+                    Nsolver.naca4dLimit = Math.Acos(1 - 2 * Convert.ToDouble(Convert.ToString(NACAtextBox.Text[1])) / 10);
+
+                    double[] A_array = Nsolver.naca4d();
+
+                    double A0 = A_array[0]; double A1 = A_array[1]; double A2 = A_array[2];
+
+                    double dx = angle - A0;
+
+                    double CL = Math.PI * (2 * A0 + A1);
+
+                    textBox2.Text = Convert.ToString(CL); //CL
+                    textBox1.Text = Convert.ToString(Convert.ToDecimal(-Math.PI * 0.5 * (A0 + A1 - A2 / 2))); //CM LE
+                    textBox7.Text = Convert.ToString(Convert.ToDecimal(-Math.PI * 0.25 * (A1 - A2))); //CM AC
+                    textBox3.Text = Convert.ToString(Nsolver.naca4dLimit); //integration limit
+
+                    textBox4.Text = Convert.ToString(Convert.ToDecimal(A0)); //A0
+                    textBox5.Text = Convert.ToString(Convert.ToDecimal(A1)); //A1
+                    textBox6.Text = Convert.ToString(Convert.ToDecimal(A2)); //A2
+
+                    double zeroAngle = dx - A1 / 2;
+
+                    ZeroAngletextBox.Text = Convert.ToString(Convert.ToDecimal((180 / Math.PI) * zeroAngle));
+
+                }
+
+                if (!Is4Digit) //5digit numerical solve routine
+                {
+                    string profile = NACAtextBox.Text[0..3];
+                    NumericalSolver Nsolver = new NumericalSolver(angle, nP, profile);
+
+                    double[] A_array = Nsolver.naca5d();
+
+                    double A0 = A_array[0]; double A1 = A_array[1]; double A2 = A_array[2];
+
+                    double dx = angle - A0;
+
+                    double CL = Math.PI * (2 * A0 + A1);
+
+                    textBox2.Text = Convert.ToString(CL); //CL
+                    textBox1.Text = Convert.ToString(Convert.ToDecimal(-Math.PI * 0.5 * (A0 + A1 - A2 / 2))); //CM LE
+                    textBox7.Text = Convert.ToString(Convert.ToDecimal(-Math.PI * 0.25 * (A1 - A2))); //CM AC
+                    textBox3.Text = Convert.ToString(Nsolver.naca5dLimit); //integration limit
+
+                    textBox4.Text = Convert.ToString(Convert.ToDecimal(A0)); //A0
+                    textBox5.Text = Convert.ToString(Convert.ToDecimal(A1)); //A1
+                    textBox6.Text = Convert.ToString(Convert.ToDecimal(A2)); //A2
+
+                    double zeroAngle = dx - A1 / 2;
+
+                    ZeroAngletextBox.Text = Convert.ToString(Convert.ToDecimal((180 / Math.PI) * zeroAngle));
+
+                }
             }
 
             //Analytical Solver Routine
@@ -529,17 +606,17 @@ namespace Coursework_1
                     double CL = Math.PI * (2 * A0 + A1);
 
                     textBox2.Text = Convert.ToString(CL); //CL
-                    textBox1.Text = Convert.ToString(-Math.PI * 0.5 * (A0 + A1 - A2 / 2)); //CM LE
-                    textBox7.Text = Convert.ToString(-Math.PI * 0.25 * (A1 - A2)); //CM AC
+                    textBox1.Text = Convert.ToString(Convert.ToDecimal(-Math.PI * 0.5 * (A0 + A1 - A2 / 2))); //CM LE
+                    textBox7.Text = Convert.ToString(Convert.ToDecimal(-Math.PI * 0.25 * (A1 - A2))); //CM AC
                     textBox3.Text = Convert.ToString(lim); //integration limit
 
-                    textBox4.Text = Convert.ToString(A0); //A0
-                    textBox5.Text = Convert.ToString(A1); //A1
-                    textBox6.Text = Convert.ToString(A2); //A2
+                    textBox4.Text = Convert.ToString(Convert.ToDecimal(A0)); //A0
+                    textBox5.Text = Convert.ToString(Convert.ToDecimal(A1)); //A1
+                    textBox6.Text = Convert.ToString(Convert.ToDecimal(A2)); //A2
 
                     double zeroAngle = dx - A1 / 2;
 
-                    ZeroAngletextBox.Text = Convert.ToString((180/Math.PI) * zeroAngle);
+                    ZeroAngletextBox.Text = Convert.ToString(Convert.ToDecimal((180 / Math.PI) * zeroAngle));
                 }
 
                 if (!Is4Digit) //5digit analytical solve
@@ -553,17 +630,17 @@ namespace Coursework_1
                     double CL = Math.PI * (2 * A0 + A1);
 
                     textBox2.Text = Convert.ToString(CL); //CL
-                    textBox1.Text = Convert.ToString(-Math.PI * 0.5 * (A0 + A1 - A2 / 2)); //CM LE
-                    textBox7.Text = Convert.ToString(-Math.PI * 0.25 * (A1 - A2)); //CM AC
+                    textBox1.Text = Convert.ToString(Convert.ToDecimal(-Math.PI * 0.5 * (A0 + A1 - A2 / 2))); //CM LE
+                    textBox7.Text = Convert.ToString(Convert.ToDecimal(-Math.PI * 0.25 * (A1 - A2))); //CM AC
                     textBox3.Text = Convert.ToString(Asolver.naca5dLimit); //integration limit
 
-                    textBox4.Text = Convert.ToString(A0); //A0
-                    textBox5.Text = Convert.ToString(A1); //A1
-                    textBox6.Text = Convert.ToString(A2); //A2
+                    textBox4.Text = Convert.ToString(Convert.ToDecimal(A0)); //A0
+                    textBox5.Text = Convert.ToString(Convert.ToDecimal(A1)); //A1
+                    textBox6.Text = Convert.ToString(Convert.ToDecimal(A2)); //A2
 
                     double zeroAngle = (angle - A0) - A1 / 2;
 
-                    ZeroAngletextBox.Text = Convert.ToString((180 / Math.PI) * zeroAngle);
+                    ZeroAngletextBox.Text = Convert.ToString(Convert.ToDecimal((180 / Math.PI) * zeroAngle));
                 }
             }
 
@@ -686,47 +763,83 @@ namespace Coursework_1
                 naca5dLimit = limit;
 
 
-                double A = k / 8 - (k * r) / 2 + (k * r * r * (3 - r)) / 6;
-                double B = (k * r) / 2 - k / 4;
-                double C = k / 8;
-                double D = (-k * r * r * r) / 6;
+                double An = k / 8 - (k * r) / 2 + (k * r * r * (3 - r)) / 6;
+                double Bn = (k * r) / 2 - k / 4;
+                double Cn = k / 8;
+                double Dn = (-k * r * r * r) / 6;
+
+                double k2 = k21 * k;
+
+                double Ar = k / 8 - k * r / 2 + k * r * r / 2 - (k2 / 6 * Math.Pow(1 - r, 3)) - k * r * r * r / 6;
+                double Br = k * r / 2 - k / 4;
+                double Cr = k / 8;
+
+                double Dr = k21 * k * r * r * r / 6 - k * r * r * r / 6 - k21 * k / 24;
+                double Er = k21 * k * r / 2 - k21 * k / 4;
+                double Fr = k21 * k / 8;
 
                 double naca5digitA0(double x)
                 {
                     double naca5digitA0ForeNormal(double x)
                     {
-                        return A * x + B * Math.Sin(x) + C * (x / 2 + 0.25 * Math.Sin(2 * x));
+                        return An * x + Bn * Math.Sin(x) + Cn * (x / 2 + 0.25 * Math.Sin(2 * x));
                     }
 
                     double naca5digitA0AftNormal(double x)
                     {
-                        return D * x;
+                        return Dn * x;
+                    }
+
+                    double naca5digitA0ForeReflex(double x)
+                    {
+                        return Ar * x + Br * Math.Sin(x) + Cr * (x / 2 + 0.25 * Math.Sin(2 * x));
+                    }
+
+                    double naca5digitA0AftReflex(double x)
+                    {
+                        return Dr * x + Er * Math.Sin(x) + Fr * (x / 2 + 0.25 * Math.Sin(2 * x));
                     }
 
                     if (reflex == 0)
                     {
                         return AoA - (1/Math.PI) * ((naca5digitA0ForeNormal(x) - naca5digitA0ForeNormal(0)) + (naca5digitA0AftNormal(Math.PI) - naca5digitA0AftNormal(x)));
                     }
-                    return 0; //chungus
+                    else
+                    {
+                        return AoA - (1 / Math.PI) * ((naca5digitA0ForeReflex(x) - naca5digitA0ForeReflex(0)) + (naca5digitA0AftReflex(Math.PI) - naca5digitA0AftReflex(x)));
+                    }
                 }
 
                 double naca5digitA1(double x)
                 {
                     double naca5digitA1ForeNormal(double x)
                     {
-                        return A * Math.Sin(x) + B * (x / 2 + Math.Sin(2 * x) / 4) + C * (Math.Sin(x) - Math.Pow(Math.Sin(x), 3) / 3);
+                        return An * Math.Sin(x) + Bn * (x / 2 + Math.Sin(2 * x) / 4) + Cn * (Math.Sin(x) - Math.Pow(Math.Sin(x), 3) / 3);
                     }
 
                     double naca5digitA1AftNormal(double x)
                     {
-                        return D * Math.Sin(x);
+                        return Dn * Math.Sin(x);
+                    }
+
+                    double naca5digitA1ForeReflex(double x)
+                    {
+                        return Ar * Math.Sin(x) + Br * (x / 2 + Math.Sin(2 * x) / 4) + Cr * (Math.Sin(x) - Math.Pow(Math.Sin(x), 3) / 3);
+                    }
+
+                    double naca5digitA1AftReflex(double x)
+                    {
+                        return Dr * Math.Sin(x) + Er * (x / 2 + Math.Sin(2 * x) / 4) + Fr * (Math.Sin(x) - Math.Pow(Math.Sin(x), 3) / 3);
                     }
 
                     if (reflex == 0)
                     {
                         return (2 / Math.PI) * ((naca5digitA1ForeNormal(x) - naca5digitA1ForeNormal(0)) + (naca5digitA1AftNormal(Math.PI) - naca5digitA1AftNormal(x)));
                     }
-                    else return 0; //chungus
+                    else
+                    {
+                        return (2 / Math.PI) * ((naca5digitA1ForeReflex(x) - naca5digitA1ForeReflex(0)) + (naca5digitA1AftReflex(Math.PI) - naca5digitA1AftReflex(x)));
+                    }
                 }
 
 
@@ -734,19 +847,32 @@ namespace Coursework_1
                 {
                     double naca5digitA2ForeNormal(double x)
                     {
-                        return A * Math.Sin(2 * x) / 2 + B * (Math.Sin(3 * x) / 6 + Math.Sin(x) / 2) + C * (x / 4 + Math.Sin(2 * x) / 4 + Math.Sin(4 * x) / 16);
+                        return An * Math.Sin(2 * x) / 2 + Bn * (Math.Sin(3 * x) / 6 + Math.Sin(x) / 2) + Cn * (x / 4 + Math.Sin(2 * x) / 4 + Math.Sin(4 * x) / 16);
                     }
 
                     double naca5digitA2AftNormal(double x)
                     {
-                        return D * Math.Sin(2 * x) / 2;
+                        return Dn * Math.Sin(2 * x) / 2;
+                    }
+
+                    double naca5digitA2ForeReflex(double x)
+                    {
+                        return Ar * Math.Sin(2 * x) / 2 + Br * (Math.Sin(3 * x) / 6 + Math.Sin(x) / 2) + Cr * (x / 4 + Math.Sin(2 * x) / 4 + Math.Sin(4 * x) / 16);
+                    }
+
+                    double naca5digitA2AftReflex(double x)
+                    {
+                        return Dr * Math.Sin(2 * x) / 2 + Er * (Math.Sin(3 * x) / 6 + Math.Sin(x) / 2) + Fr * (x / 4 + Math.Sin(2 * x) / 4 + Math.Sin(4 * x) / 16);
                     }
 
                     if (reflex == 0)
                     {
                         return (2 / Math.PI) * ((naca5digitA2ForeNormal(x) - naca5digitA2ForeNormal(0)) + (naca5digitA2AftNormal(Math.PI) - naca5digitA2AftNormal(x)));
                     }
-                    else return 0; //chungus
+                    else
+                    {
+                        return (2 / Math.PI) * ((naca5digitA2ForeReflex(x) - naca5digitA2ForeReflex(0)) + (naca5digitA2AftReflex(Math.PI) - naca5digitA2AftReflex(x)));
+                    }
                 }
 
                 //ending return A cofficient list
@@ -760,7 +886,217 @@ namespace Coursework_1
         //NumericalSolver Class - contains all functions for solving numerically with simpsons rule
         public class NumericalSolver
         {
+            //AoA property
+            public double AoA { get; set; }
 
+            //naca 5digit integration limit
+            public double naca5dLimit { get; set; }
+
+            //naca 4digit integration limit
+            public double naca4dLimit { get; set; }
+
+            //n - number of points/sub intervals for simpsons rule
+            public int n { get; set; }
+
+            private double r { get; set; }
+
+            private double k1 { get; set; }
+
+            private double k2 { get; set; }
+
+            public double m { get; set; }
+
+            public double p { get; set; }
+
+            private int reflex { get; set; }
+
+            //Constructor
+            public NumericalSolver(double angleOfAttack = 0, int nPoints = 10, string profile = "230")
+            {
+                AoA = angleOfAttack;
+                n = nPoints;
+
+                double[] arr = Naca5dTable(profile);
+
+                r = arr[0];
+                k1 = arr[1];
+                k2 = arr[2];
+                reflex = Convert.ToInt32(arr[3]);
+
+            }
+            
+            public double[] Naca5dTable(string profile)
+            {
+                double[] Normal_rList = { 0.058, 0.126, 0.2025, 0.29, 0.391 };
+                double[] Normal_k1List = { 361.4, 51.64, 15.957, 6.643, 3.23 };
+                double[] Reflex_pList = { 0.1, 0.15, 0.2, 0.25 };
+                double[] Reflex_rList = { 0.13, 0.217, 0.318, 0.441 };
+                double[] Reflex_k1List = { 51.99, 15.793, 6.52, 3.191 };
+                double[] Reflex_k21List = { 0.000764, 0.00677, 0.0303, 0.1355 };
+
+                string[] Normal_profileList = { "210", "220", "230", "240", "250" };
+                string[] Reflex_profileList = { "221", "231", "241", "251" };
+
+                double r = new();
+                double k = new();
+                double k21 = new();
+
+                int reflex = 0;
+                if (Convert.ToString(profile[2]) == "1") { reflex = 1; }
+
+                if (reflex == 0)
+                {
+                    for (int i = 0; i < 5; i++)
+                    {
+                        if (profile == Normal_profileList[i])
+                        {
+                            r = Normal_rList[i];
+                            k = Normal_k1List[i];
+
+                            break;
+                        }
+                    }
+                }
+                else if (reflex == 1)
+                {
+                    for (int i = 0; i < 4; i++)
+                    {
+                        if (profile == Reflex_profileList[i])
+                        {
+                            r = Reflex_rList[i];
+                            k = Reflex_k1List[i];
+                            k21 = Reflex_k21List[i];
+
+                            break;
+                        }
+                    }
+                }
+
+                double limit = Math.Acos(1 - 2 * r);
+                naca5dLimit = limit;
+                
+
+                double[] arrayOut = { r, k, k21*k, reflex, limit }; //FORMAT - r, k1, k2, reflex, limit
+
+                return arrayOut;
+            }
+
+            //NACA aerofoil camber line equations
+            public double Fore4d(double x) { return (2 * m) / (p * p) * (p - (0.5 * (1 - Math.Cos(x))));  }
+            
+            public double Aft4d(double x) { return (2 * m) / Math.Pow(1 - p, 2) * (p - (0.5 * (1 - Math.Cos(x)))); }
+
+            public double Fore5dNormal(double x) { return (k1 / 6) * (3 * (0.25*(1-2*Math.Cos(x)+Math.Pow(Math.Cos(x),2))) - 6 * r * (0.5 * (1 - Math.Cos(x))) + r * r * (3 - r)); }
+
+            public double Aft5dNormal(double x) { return (-k1 / 6) * (r * r * r); }
+
+            public double Fore5dReflex(double x) { return (k1 / 6) * (3 * Math.Pow((0.5 * (1 - Math.Cos(x))) - r, 2) - (k2 / k1) * Math.Pow(1 - r, 3) - Math.Pow(r, 3)); }
+
+            public double Aft5dReflex(double x) { return (k1 / 6) * (3 * (k2 / k1) * Math.Pow((0.5 * (1 - Math.Cos(x))) - r, 2) - (k2 / k1) * Math.Pow(1 - r, 3) - Math.Pow(r, 3)); }
+
+            //Simpsons composite rule routine
+            public double Simpson(int nPoints, int A, Func<double, double> fNACA)
+            {
+                //Creating xrange array of points between 0 and 1
+                double[] xrange = new double[nPoints];
+                for (int i = 0; i < nPoints; i++) { xrange[i] = Convert.ToDouble(i / nPoints); }
+
+                double h = 1 / Convert.ToDouble(nPoints); //step size
+
+                double sum = 0;
+
+                if (A == 1)
+                {
+                    //first sum operator
+                    for (int i = 1; i < nPoints / 2; i++) { sum += fNACA(xrange[2 * i - 1]) * Math.Cos(xrange[2 * i - 1]); }
+                    sum *= 4;
+
+                    //second sum operator
+                    for (int i = 1; i < (nPoints / 2) - 1; i++) { sum += fNACA(xrange[2 * i]) * Math.Cos(xrange[2 * i]); }
+                    sum *= 2;
+
+                    //add f(x0) and f(xN) and include h/3 term
+                    sum += (fNACA(0) * Math.Cos(0) + fNACA(1) * Math.Cos(1));
+                    sum *= h / 3;
+                }
+                if (A == 2)
+                {
+                    //first sum operator
+                    for (int i = 1; i < nPoints / 2; i++) { sum += fNACA(xrange[2 * i - 1]) * Math.Cos(2*xrange[2 * i - 1]); }
+                    sum *= 4;
+
+                    //second sum operator
+                    for (int i = 1; i < (nPoints / 2) - 1; i++) { sum += fNACA(xrange[2 * i]) * Math.Cos(2*xrange[2 * i]); }
+                    sum *= 2;
+
+                    //add f(x0) and f(xN) and include h/3 term
+                    sum += (fNACA(0) * Math.Cos(2*0) + fNACA(1) * Math.Cos(2*1));
+                    sum *= h / 3;
+                }
+                else
+                {
+                    //first sum operator
+                    for (int i = 1; i < nPoints / 2; i++) { sum += fNACA(xrange[2 * i - 1]); }
+                    sum *= 4;
+
+                    //second sum operator
+                    for (int i = 1; i < (nPoints / 2) - 1; i++) { sum += fNACA(xrange[2 * i]); }
+                    sum *= 2;
+
+                    //add f(x0) and f(xN) and include h/3 term
+                    sum += (fNACA(0) + fNACA(1));
+                    sum *= h / 3;
+                }
+
+                return sum;
+
+            }
+
+            public double[] naca4d()
+            {
+                int[] nP = PointSplit(naca4dLimit);
+
+                double A0 = AoA - (1 / Math.PI) * (Simpson(nP[0], 0, Fore4d) + Simpson(nP[1], 0, Aft4d));
+                double A1 = (2 / Math.PI) * (Simpson(nP[0], 1, Fore4d) + Simpson(nP[1], 1, Aft4d));
+                double A2 = (2 / Math.PI) * (Simpson(nP[0], 2, Fore4d) + Simpson(nP[1], 2, Aft4d));
+
+                double[] output = { A0, A1, A2 };
+
+                return output;
+            }
+
+            public double[] naca5d()
+            {
+                int[] nP = PointSplit(naca5dLimit);
+
+                double A0 = new(); double A1 = new(); double A2 = new();
+
+                if (reflex == 0)
+                {
+                    A0 = AoA - (1 / Math.PI) * (Simpson(nP[0], 0, Fore5dNormal) + Simpson(nP[1], 0, Aft5dNormal));
+                    A1 = (2 / Math.PI) * (Simpson(nP[0], 1, Fore5dNormal) + Simpson(nP[1], 1, Aft5dNormal));
+                    A2 = (2 / Math.PI) * (Simpson(nP[0], 2, Fore5dNormal) + Simpson(nP[1], 2, Aft5dNormal));
+                }
+                else
+                {
+                    A0 = AoA - (1 / Math.PI) * (Simpson(nP[0], 0, Fore5dReflex) + Simpson(nP[1], 0, Aft5dReflex));
+                    A1 = (2 / Math.PI) * (Simpson(nP[0], 1, Fore5dReflex) + Simpson(nP[1], 1, Aft5dReflex));
+                    A2 = (2 / Math.PI) * (Simpson(nP[0], 2, Fore5dReflex) + Simpson(nP[1], 2, Aft5dReflex));
+                }
+
+                double[] output = { A0, A1, A2 };
+
+                return output;
+            }
+
+
+            public int[] PointSplit(double limit)
+            {
+                int nFore = Convert.ToInt32(Math.Round(n * limit));
+                int nAft = Convert.ToInt32(Math.Round(n * 1 - limit));
+
+                return new int[] { nFore, nAft };
+            }
         }
 
 

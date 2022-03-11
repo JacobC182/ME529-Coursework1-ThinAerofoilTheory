@@ -11,16 +11,22 @@ namespace Coursework_1
             int centreX = panel1.Width / 2;
             int centreY = panel1.Height / 2;
 
+            
+
         }
 
-        private void Form1_Load(object sender, EventArgs e) // on form1 loading (anything that should be run immediately on launch)
+        public void Form1_Load(object sender, EventArgs e) // on form1 loading (anything that should be run immediately on launch)
         {
-
+            
         }
 
         private void InfoButton_Click(object sender, EventArgs e)//Info Button clicked
         {
             MessageBox.Show("Helpful Info!\n\nChoose a Solver using the Analytical and Numerical Boxes!\n\nInput your 4 or 5 digit NACA Aerofoil number in the NACA code box!\n\nInput your angle of attack (in degrees) in the AoA box!");
+            
+            InfoForm infoForm = new InfoForm();
+            infoForm.Show();
+
         }
 
         public void SolveButton_Click(object sender, EventArgs e)

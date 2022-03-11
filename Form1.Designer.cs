@@ -467,7 +467,7 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(884, 568);
+            this.ClientSize = new System.Drawing.Size(884, 561);
             this.Controls.Add(this.textBox8);
             this.Controls.Add(this.label25);
             this.Controls.Add(this.label24);
@@ -510,7 +510,9 @@
             this.Controls.Add(this.NumericalSolveButton);
             this.Controls.Add(this.AnalyticalSolveButton);
             this.Controls.Add(this.SolveButton);
-            this.MinimumSize = new System.Drawing.Size(900, 1);
+            this.MaximizeBox = false;
+            this.MaximumSize = new System.Drawing.Size(900, 600);
+            this.MinimumSize = new System.Drawing.Size(900, 600);
             this.Name = "Form1";
             this.Text = "Thin NACA Aerofoil Solver - ME529 Coursework 1";
             this.Load += new System.EventHandler(this.Form1_Load);

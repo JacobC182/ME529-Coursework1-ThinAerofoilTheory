@@ -549,18 +549,29 @@ namespace Coursework_1
 
                     double CL = Math.PI * (2 * A0 + A1);
 
-                    textBox2.Text = Convert.ToString(CL); //CL
-                    textBox1.Text = Convert.ToString(Convert.ToDecimal(-Math.PI * 0.5 * (A0 + A1 - A2 / 2))); //CM LE
-                    textBox7.Text = Convert.ToString(Convert.ToDecimal(-Math.PI * 0.25 * (A1 - A2))); //CM AC
-                    textBox3.Text = Convert.ToString(Nsolver.naca4dLimit); //integration limit
-
-                    textBox4.Text = Convert.ToString(Convert.ToDecimal(A0)); //A0
-                    textBox5.Text = Convert.ToString(Convert.ToDecimal(A1)); //A1
-                    textBox6.Text = Convert.ToString(Convert.ToDecimal(A2)); //A2
-
                     double zeroAngle = dx - A1 / 2;
 
-                    ZeroAngletextBox.Text = Convert.ToString(Convert.ToDecimal((180 / Math.PI) * zeroAngle));
+                    textBox2.Text = Convert.ToString(CL); //CL
+                    try { textBox1.Text = Convert.ToString(Convert.ToDecimal(-Math.PI * 0.5 * (A0 + A1 - A2 / 2))); } //CM LE
+                    catch (Exception) { textBox1.Text = "0"; }
+
+                    try { textBox7.Text = Convert.ToString(Convert.ToDecimal(-Math.PI * 0.25 * (A1 - A2))); }//CM AC
+                    catch (Exception) { textBox7.Text = "0"; }
+
+                    textBox3.Text = Convert.ToString(Nsolver.naca4dLimit); //integration limit
+
+                    try { textBox4.Text = Convert.ToString(Convert.ToDecimal(A0)); } //A0
+                    catch (Exception) { textBox4.Text = "0"; }
+
+                    try { textBox5.Text = Convert.ToString(Convert.ToDecimal(A1)); } //A1
+                    catch (Exception) { textBox5.Text = "0"; }
+
+                    try { textBox6.Text = Convert.ToString(Convert.ToDecimal(A2)); } //A2
+                    catch (Exception) { textBox6.Text = "0"; }
+                    
+
+                    try { ZeroAngletextBox.Text = Convert.ToString(Convert.ToDecimal((180 / Math.PI) * zeroAngle)); }
+                    catch (Exception) { ZeroAngletextBox.Text = "0"; }
 
                 }
 
@@ -578,17 +589,26 @@ namespace Coursework_1
                     double CL = Math.PI * (2 * A0 + A1);
 
                     textBox2.Text = Convert.ToString(CL); //CL
-                    textBox1.Text = Convert.ToString(Convert.ToDecimal(-Math.PI * 0.5 * (A0 + A1 - A2 / 2))); //CM LE
-                    textBox7.Text = Convert.ToString(Convert.ToDecimal(-Math.PI * 0.25 * (A1 - A2))); //CM AC
-                    textBox3.Text = Convert.ToString(Nsolver.naca5dLimit); //integration limit
+                    try { textBox1.Text = Convert.ToString(Convert.ToDecimal(-Math.PI * 0.5 * (A0 + A1 - A2 / 2))); } //CM LE
+                    catch (Exception) { textBox1.Text = "0"; }
 
-                    textBox4.Text = Convert.ToString(Convert.ToDecimal(A0)); //A0
-                    textBox5.Text = Convert.ToString(Convert.ToDecimal(A1)); //A1
-                    textBox6.Text = Convert.ToString(Convert.ToDecimal(A2)); //A2
+                    try { textBox7.Text = Convert.ToString(Convert.ToDecimal(-Math.PI * 0.25 * (A1 - A2))); }//CM AC
+                    catch (Exception) { textBox7.Text = "0"; }
 
+                    //textBox3.Text = Convert.ToString(lim); //integration limit
+
+                    try { textBox4.Text = Convert.ToString(Convert.ToDecimal(A0)); } //A0
+                    catch (Exception) { textBox4.Text = "0"; }
+
+                    try { textBox5.Text = Convert.ToString(Convert.ToDecimal(A1)); } //A1
+                    catch (Exception) { textBox5.Text = "0"; }
+
+                    try { textBox6.Text = Convert.ToString(Convert.ToDecimal(A2)); } //A2
+                    catch (Exception) { textBox6.Text = "0"; }
                     double zeroAngle = dx - A1 / 2;
 
-                    ZeroAngletextBox.Text = Convert.ToString(Convert.ToDecimal((180 / Math.PI) * zeroAngle));
+                    try { ZeroAngletextBox.Text = Convert.ToString(Convert.ToDecimal((180 / Math.PI) * zeroAngle)); }
+                    catch (Exception) { ZeroAngletextBox.Text = "0"; }
 
                 }
             }
@@ -611,18 +631,31 @@ namespace Coursework_1
 
                     double CL = Math.PI * (2 * A0 + A1);
 
-                    textBox2.Text = Convert.ToString(CL); //CL
-                    textBox1.Text = Convert.ToString(Convert.ToDecimal(-Math.PI * 0.5 * (A0 + A1 - A2 / 2))); //CM LE
-                    textBox7.Text = Convert.ToString(Convert.ToDecimal(-Math.PI * 0.25 * (A1 - A2))); //CM AC
+                    string CLs = Convert.ToString(CL);
+
+                    if (CLs == "NaN") { textBox2.Text = "0"; }
+                    else { textBox2.Text = CLs; } //CL }
+
+                    try { textBox1.Text = Convert.ToString(Convert.ToDecimal(-Math.PI * 0.5 * (A0 + A1 - A2 / 2))); } //CM LE
+                    catch (Exception) { textBox1.Text = "0"; }
+
+                    try { textBox7.Text = Convert.ToString(Convert.ToDecimal(-Math.PI * 0.25 * (A1 - A2))); }//CM AC
+                    catch (Exception) { textBox7.Text = "0"; }
+
                     textBox3.Text = Convert.ToString(lim); //integration limit
 
-                    textBox4.Text = Convert.ToString(Convert.ToDecimal(A0)); //A0
-                    textBox5.Text = Convert.ToString(Convert.ToDecimal(A1)); //A1
-                    textBox6.Text = Convert.ToString(Convert.ToDecimal(A2)); //A2
+                    try { textBox4.Text = Convert.ToString(Convert.ToDecimal(A0)); } //A0
+                    catch (Exception) { textBox4. Text = "0"; }
 
+                    try { textBox5.Text = Convert.ToString(Convert.ToDecimal(A1)); } //A1
+                    catch (Exception) { textBox5. Text = "0"; }
+
+                    try { textBox6.Text = Convert.ToString(Convert.ToDecimal(A2)); } //A2
+                    catch (Exception) { textBox6.Text= "0"; }
                     double zeroAngle = dx - A1 / 2;
 
-                    ZeroAngletextBox.Text = Convert.ToString(Convert.ToDecimal((180 / Math.PI) * zeroAngle));
+                    try { ZeroAngletextBox.Text = Convert.ToString(Convert.ToDecimal((180 / Math.PI) * zeroAngle)); }
+                    catch (Exception) { ZeroAngletextBox.Text = "0"; }
                 }
 
                 if (!Is4Digit) //5digit analytical solve

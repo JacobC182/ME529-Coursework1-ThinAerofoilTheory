@@ -57,4 +57,42 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
+  <data name="label1.Text" xml:space="preserve">
+    <value>Welcome to the Information/Help section of this software
+
+Information:
+This software assists in the calculation of parameters for NACA 4 digit and 5 digit aerofoil profiles in 2D using Thin Aerofoil theory.
+
+The parameters can be calculated using either an Analytical solver method: The NACA aerofoil equations are solved analytically.
+                                                                              or a Numerical solver method: The equations are integrated numerically using Simpsons rule.
+
+This software calculates the following parameters:
+
+The angle of attack at which the Aerofoil produces zero lift.
+The lift coefficient at the specified angle of attack.
+The pitching moment about the leading edge.
+The pitching moment about the aerodynamic centre.
+
+The A0, A1 and A2 coefficient values for Thin Aerofoil theory.
+
+
+Help:
+Input the desired NACA 4 digit or 5 digit Aerofoil code in the NACA box.
+Input the desired angle of attack in the AoA box (in degrees).
+Choose the desired solver method, along with the number of sub divisions for numerical integration if required.
+
+Use the Solve button to perform the calculation and display the results.
+The specifications of the NACA aerofoil section selected are also displayed below the results.
+
+The aerofoil section is plotted also, the "Render with AoA" box allows for the visualisation of the aerofoil section at the specified angle of attack.
+
+
+
+
+This software was written by Jacob Currie - Student No. 201718558
+For the module: ME529 Aerodynamics in C - Coursework No. 1.
+
+Notable mentions - Dr. Stickland's class resources on MyPlace
+                                 - airfoiltools.com</value>
+  </data>
 </root>

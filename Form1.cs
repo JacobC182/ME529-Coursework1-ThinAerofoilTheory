@@ -77,6 +77,11 @@ namespace Coursework_1
             if (NACAcode.Length == 4) { Plot(maxCamber, posCamber, thickness, true, symmFoil); } //4digit plotting
             if (NACAcode.Length == 5) { Plot(maxCamber, reflex, thickness, false, symmFoil); }  //5digit plotting
 
+            if (NACAcode.Length == 4) //hiding 5digit form objects
+            {
+                label26.Visible = false; label27.Visible = false; label28.Visible = false;
+                textBox9.Visible = false; textBox10.Visible = false; textBox11.Visible = false;
+            }  
         }
 
         //Function for returning aerofoil sections (4 digit)
@@ -112,6 +117,8 @@ namespace Coursework_1
                 output = new double[6] { x - yt * Math.Sin(theta), x + yt * Math.Sin(theta), yc + yt * Math.Cos(theta), yc - yt * Math.Cos(theta), yc, yt }; //output list
                 return output;
             }
+
+            
 
             output = new double[6] { x, x, yt, -yt, 0, 0 };
             return output;
@@ -166,6 +173,13 @@ namespace Coursework_1
                     }
                 }
             }
+
+            label28.Visible = false; textBox11.Visible = false;
+            //printing the above r,k1,/k2/1 values to form
+            label26.Visible = true; label27.Visible = true; textBox9.Visible = true; textBox10.Visible = true;
+            textBox9.Text = r.ToString(); textBox10.Text = k1.ToString();
+
+            if (reflex == 1) { label28.Visible = true; textBox11.Visible = true; textBox11.Text = k21.ToString(); }
 
             double chord = 1; //chord is always from 0 to 1
 
@@ -624,8 +638,6 @@ namespace Coursework_1
                     ZeroAngletextBox.Text = Convert.ToString(Convert.ToDecimal((180 / Math.PI) * zeroAngle));
                 }
             }
-
-
         }
 
         public class AnalyticalSolver //AnalyticalSolver Class - contains all functions for solving analytically NACA coefficients

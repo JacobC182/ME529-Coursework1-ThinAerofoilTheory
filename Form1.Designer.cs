@@ -70,6 +70,12 @@
             this.textBox7 = new System.Windows.Forms.TextBox();
             this.label25 = new System.Windows.Forms.Label();
             this.textBox8 = new System.Windows.Forms.TextBox();
+            this.label26 = new System.Windows.Forms.Label();
+            this.label27 = new System.Windows.Forms.Label();
+            this.label28 = new System.Windows.Forms.Label();
+            this.textBox9 = new System.Windows.Forms.TextBox();
+            this.textBox10 = new System.Windows.Forms.TextBox();
+            this.textBox11 = new System.Windows.Forms.TextBox();
             this.SuspendLayout();
             // 
             // SolveButton
@@ -463,11 +469,74 @@
             this.textBox8.Text = "20";
             this.textBox8.Visible = false;
             // 
+            // label26
+            // 
+            this.label26.AutoSize = true;
+            this.label26.Location = new System.Drawing.Point(806, 145);
+            this.label26.Name = "label26";
+            this.label26.Size = new System.Drawing.Size(11, 15);
+            this.label26.TabIndex = 49;
+            this.label26.Text = "r";
+            this.label26.Visible = false;
+            // 
+            // label27
+            // 
+            this.label27.AutoSize = true;
+            this.label27.Location = new System.Drawing.Point(800, 174);
+            this.label27.Name = "label27";
+            this.label27.Size = new System.Drawing.Size(19, 15);
+            this.label27.TabIndex = 50;
+            this.label27.Text = "k1";
+            this.label27.Visible = false;
+            // 
+            // label28
+            // 
+            this.label28.AutoSize = true;
+            this.label28.Location = new System.Drawing.Point(782, 207);
+            this.label28.Name = "label28";
+            this.label28.Size = new System.Drawing.Size(36, 15);
+            this.label28.TabIndex = 51;
+            this.label28.Text = "k2/k1";
+            this.label28.Visible = false;
+            // 
+            // textBox9
+            // 
+            this.textBox9.Location = new System.Drawing.Point(823, 142);
+            this.textBox9.Name = "textBox9";
+            this.textBox9.ReadOnly = true;
+            this.textBox9.Size = new System.Drawing.Size(54, 23);
+            this.textBox9.TabIndex = 52;
+            this.textBox9.Visible = false;
+            // 
+            // textBox10
+            // 
+            this.textBox10.Location = new System.Drawing.Point(823, 174);
+            this.textBox10.Name = "textBox10";
+            this.textBox10.ReadOnly = true;
+            this.textBox10.Size = new System.Drawing.Size(54, 23);
+            this.textBox10.TabIndex = 53;
+            this.textBox10.Visible = false;
+            // 
+            // textBox11
+            // 
+            this.textBox11.Location = new System.Drawing.Point(823, 204);
+            this.textBox11.Name = "textBox11";
+            this.textBox11.ReadOnly = true;
+            this.textBox11.Size = new System.Drawing.Size(54, 23);
+            this.textBox11.TabIndex = 54;
+            this.textBox11.Visible = false;
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(884, 561);
+            this.Controls.Add(this.textBox11);
+            this.Controls.Add(this.textBox10);
+            this.Controls.Add(this.textBox9);
+            this.Controls.Add(this.label28);
+            this.Controls.Add(this.label27);
+            this.Controls.Add(this.label26);
             this.Controls.Add(this.textBox8);
             this.Controls.Add(this.label25);
             this.Controls.Add(this.label24);
@@ -565,5 +634,11 @@
         private TextBox textBox7;
         private Label label25;
         private TextBox textBox8;
+        private Label label26;
+        private Label label27;
+        private Label label28;
+        private TextBox textBox9;
+        private TextBox textBox10;
+        private TextBox textBox11;
     }
 }

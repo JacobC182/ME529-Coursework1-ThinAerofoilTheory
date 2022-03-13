@@ -7,12 +7,6 @@ namespace Coursework_1
         public Form1() //initialising main form Form1
         {
             InitializeComponent();
-
-            int centreX = panel1.Width / 2;
-            int centreY = panel1.Height / 2;
-
-            
-
         }
 
         public void Form1_Load(object sender, EventArgs e) // on form1 loading (anything that should be run immediately on launch)
@@ -22,8 +16,6 @@ namespace Coursework_1
 
         private void InfoButton_Click(object sender, EventArgs e)//Info Button clicked
         {
-            MessageBox.Show("Helpful Info!\n\nChoose a Solver using the Analytical and Numerical Boxes!\n\nInput your 4 or 5 digit NACA Aerofoil number in the NACA code box!\n\nInput your angle of attack (in degrees) in the AoA box!");
-            
             InfoForm infoForm = new InfoForm();
             infoForm.Show();
 
@@ -1021,71 +1013,106 @@ namespace Coursework_1
             }
 
             //NACA aerofoil camber line equations
-            public double Fore4d(double x) { return (2 * m) / (p * p) * (p - (0.5 * (1 - Math.Cos(x))));  }
+
+            public double Fore4d(double x) { return m * (2 * p - 1) / (p * p) + m * Math.Cos(x) / (p * p);  }
             
-            public double Aft4d(double x) { return (2 * m) / Math.Pow(1 - p, 2) * (p - (0.5 * (1 - Math.Cos(x)))); }
+            public double Aft4d(double x) { return m * (2 * p - 1) / Math.Pow(1 - p, 2) + m * Math.Cos(x) / Math.Pow(1 - p, 2); }
 
-            public double Fore5dNormal(double x) { return (k1 / 6) * (3 * (0.25*(1-2*Math.Cos(x)+Math.Pow(Math.Cos(x),2))) - 6 * r * (0.5 * (1 - Math.Cos(x))) + r * r * (3 - r)); }
+            public double Fore5dNormal(double x)
+            {
+                double An = k1 / 8 - (k1 * r) / 2 + (k1 * r * r * (3 - r)) / 6;
+                double Bn = (k1 * r) / 2 - k1 / 4;
+                double Cn = k1 / 8;
 
-            public double Aft5dNormal(double x) { return (-k1 / 6) * (r * r * r); }
+                return An + Bn * Math.Cos(x) + Cn * Math.Pow(Math.Cos(x),2);
+            }
 
-            public double Fore5dReflex(double x) { return (k1 / 6) * (3 * Math.Pow((0.5 * (1 - Math.Cos(x))) - r, 2) - (k2 / k1) * Math.Pow(1 - r, 3) - Math.Pow(r, 3)); }
+            public double Aft5dNormal(double x)
+            {
+                double Dn = (-k1 * r * r * r) / 6;
+                return Dn;
+            }
 
-            public double Aft5dReflex(double x) { return (k1 / 6) * (3 * (k2 / k1) * Math.Pow((0.5 * (1 - Math.Cos(x))) - r, 2) - (k2 / k1) * Math.Pow(1 - r, 3) - Math.Pow(r, 3)); }
+            public double Fore5dReflex(double x)
+            {
+                double Ar = k1 / 8 - k1 * r / 2 + k1 * r * r / 2 - (k2 / 6 * Math.Pow(1 - r, 3)) - k1 * r * r * r / 6;
+                double Br = k1 * r / 2 - k1 / 4;
+                double Cr = k1 / 8;
+
+                return Ar + Br * Math.Cos(x) + Cr * Math.Pow(Math.Cos(x), 2);
+            }
+
+            public double Aft5dReflex(double x)
+            {
+                double Dr = k2 * r * r * r / 6 - k1 * r * r * r / 6 - k2 / 24;
+                double Er = k2 * r / 2 - k2 / 4;
+                double Fr = k2 / 8;
+
+                return Dr + Er * Math.Cos(x) + Fr * Math.Pow(Math.Cos(x), 2);
+            }
 
             //Simpsons composite rule routine
-            public double Simpson(int nPoints, int A, Func<double, double> fNACA)
+            public double Simpson(double a, double b, int nPoints, int A, Func<double, double> fNACA)
             {
-                //Creating xrange array of points between 0 and 1
-                double[] xrange = new double[nPoints];
-                for (int i = 0; i < nPoints; i++) { xrange[i] = Convert.ToDouble(i / nPoints); }
 
-                double h = 1 / Convert.ToDouble(nPoints); //step size
+                double h = (b - a) / nPoints; //step size
+
+                //Creating xrange array of points between a and b
+                double[] xrange = new double[nPoints + 1];
+
+                int c = 0;
+                for (double i = a; i <= b; i += h)
+                {
+                    xrange[c] = Convert.ToDouble(i);
+                    c++;
+                }
+
+                double sum1 = 0;
+                double sum2 = 0;
 
                 double sum = 0;
+
+                if (A == 0)
+                {
+                    //first sum operator
+                    for (int i = 1; i <= nPoints / 2; i++) { sum1 += fNACA(xrange[2 * i - 1]); }
+                    sum1 *= 4;
+
+                    //second sum operator
+                    for (int i = 1; i <= (nPoints / 2) - 1; i++) { sum2 += fNACA(xrange[2 * i]); }
+                    sum2 *= 2;
+
+                    sum = sum1 + sum2 + (fNACA(a) + fNACA(b));
+                }
 
                 if (A == 1)
                 {
                     //first sum operator
-                    for (int i = 1; i < nPoints / 2; i++) { sum += fNACA(xrange[2 * i - 1]) * Math.Cos(xrange[2 * i - 1]); }
-                    sum *= 4;
+                    for (int i = 1; i <= nPoints / 2; i++) { sum1 += fNACA(xrange[2 * i - 1]) * Math.Cos(xrange[2 * i - 1]); }
+                    sum1 *= 4;
 
                     //second sum operator
-                    for (int i = 1; i < (nPoints / 2) - 1; i++) { sum += fNACA(xrange[2 * i]) * Math.Cos(xrange[2 * i]); }
-                    sum *= 2;
+                    for (int i = 1; i <= (nPoints / 2) - 1; i++) { sum2 += fNACA(xrange[2 * i]) * Math.Cos(xrange[2 * i]); }
+                    sum2 *= 2;
 
-                    //add f(x0) and f(xN) and include h/3 term
-                    sum += (fNACA(0) * Math.Cos(0) + fNACA(1) * Math.Cos(1));
-                    sum *= h / 3;
+                    sum = sum1 + sum2 + (fNACA(a) * Math.Cos(a) + fNACA(b) * Math.Cos(b));
                 }
+
                 if (A == 2)
                 {
                     //first sum operator
-                    for (int i = 1; i < nPoints / 2; i++) { sum += fNACA(xrange[2 * i - 1]) * Math.Cos(2*xrange[2 * i - 1]); }
-                    sum *= 4;
+                    for (int i = 1; i <= nPoints / 2; i++) { sum1 += fNACA(xrange[2 * i - 1]) * Math.Cos(2*xrange[2 * i - 1]); }
+                    sum1 *= 4;
 
                     //second sum operator
-                    for (int i = 1; i < (nPoints / 2) - 1; i++) { sum += fNACA(xrange[2 * i]) * Math.Cos(2*xrange[2 * i]); }
-                    sum *= 2;
+                    for (int i = 1; i <= (nPoints / 2) - 1; i++) { sum2 += fNACA(xrange[2 * i]) * Math.Cos(2*xrange[2 * i]); }
+                    sum2 *= 2;
 
-                    //add f(x0) and f(xN) and include h/3 term
-                    sum += (fNACA(0) * Math.Cos(2*0) + fNACA(1) * Math.Cos(2*1));
-                    sum *= h / 3;
+                    sum = sum1 + sum2 + (fNACA(a) * Math.Cos(2*a) + fNACA(b) * Math.Cos(2*b));
                 }
-                else
-                {
-                    //first sum operator
-                    for (int i = 1; i < nPoints / 2; i++) { sum += fNACA(xrange[2 * i - 1]); }
-                    sum *= 4;
+                
 
-                    //second sum operator
-                    for (int i = 1; i < (nPoints / 2) - 1; i++) { sum += fNACA(xrange[2 * i]); }
-                    sum *= 2;
-
-                    //add f(x0) and f(xN) and include h/3 term
-                    sum += (fNACA(0) + fNACA(1));
-                    sum *= h / 3;
-                }
+                sum *= h / 3;
 
                 return sum;
 
@@ -1093,11 +1120,9 @@ namespace Coursework_1
 
             public double[] naca4d()
             {
-                int[] nP = PointSplit(naca4dLimit);
-
-                double A0 = AoA - (1 / Math.PI) * (Simpson(nP[0], 0, Fore4d) + Simpson(nP[1], 0, Aft4d));
-                double A1 = (2 / Math.PI) * (Simpson(nP[0], 1, Fore4d) + Simpson(nP[1], 1, Aft4d));
-                double A2 = (2 / Math.PI) * (Simpson(nP[0], 2, Fore4d) + Simpson(nP[1], 2, Aft4d));
+                double A0 = AoA - (1 / Math.PI) * (Simpson(0, naca4dLimit, n, 0, Fore4d) + Simpson(naca4dLimit, Math.PI, n, 0, Aft4d));
+                double A1 = (2 / Math.PI) * (Simpson(0, naca4dLimit, n, 1, Fore4d) + Simpson(naca4dLimit, Math.PI, n, 1, Aft4d));
+                double A2 = (2 / Math.PI) * (Simpson(0, naca4dLimit, n, 2, Fore4d) + Simpson(naca4dLimit, Math.PI, n, 2, Aft4d));
 
                 double[] output = { A0, A1, A2 };
 
@@ -1106,35 +1131,24 @@ namespace Coursework_1
 
             public double[] naca5d()
             {
-                int[] nP = PointSplit(naca5dLimit);
-
                 double A0 = new(); double A1 = new(); double A2 = new();
 
                 if (reflex == 0)
                 {
-                    A0 = AoA - (1 / Math.PI) * (Simpson(nP[0], 0, Fore5dNormal) + Simpson(nP[1], 0, Aft5dNormal));
-                    A1 = (2 / Math.PI) * (Simpson(nP[0], 1, Fore5dNormal) + Simpson(nP[1], 1, Aft5dNormal));
-                    A2 = (2 / Math.PI) * (Simpson(nP[0], 2, Fore5dNormal) + Simpson(nP[1], 2, Aft5dNormal));
+                    A0 = AoA - (1 / Math.PI) * (Simpson(0, naca5dLimit, n, 0, Fore5dNormal) + Simpson(naca5dLimit, Math.PI, n, 0, Aft5dNormal));
+                    A1 = (2 / Math.PI) * (Simpson(0, naca5dLimit, n, 1, Fore5dNormal) + Simpson(naca5dLimit, Math.PI, n, 1, Aft5dNormal));
+                    A2 = (2 / Math.PI) * (Simpson(0, naca5dLimit, n, 2, Fore5dNormal) + Simpson(naca5dLimit, Math.PI, n, 2, Aft5dNormal));
                 }
                 else
                 {
-                    A0 = AoA - (1 / Math.PI) * (Simpson(nP[0], 0, Fore5dReflex) + Simpson(nP[1], 0, Aft5dReflex));
-                    A1 = (2 / Math.PI) * (Simpson(nP[0], 1, Fore5dReflex) + Simpson(nP[1], 1, Aft5dReflex));
-                    A2 = (2 / Math.PI) * (Simpson(nP[0], 2, Fore5dReflex) + Simpson(nP[1], 2, Aft5dReflex));
+                    A0 = AoA - (1 / Math.PI) * (Simpson(0, naca5dLimit, n, 0, Fore5dReflex) + Simpson(naca5dLimit, Math.PI, n, 0, Aft5dReflex));
+                    A1 = (2 / Math.PI) * (Simpson(0, naca5dLimit, n, 1, Fore5dReflex) + Simpson(naca5dLimit, Math.PI, n, 1, Aft5dReflex));
+                    A2 = (2 / Math.PI) * (Simpson(0, naca5dLimit, n, 2, Fore5dReflex) + Simpson(naca5dLimit, Math.PI, n, 2, Aft5dReflex));
                 }
 
                 double[] output = { A0, A1, A2 };
 
                 return output;
-            }
-
-
-            public int[] PointSplit(double limit)
-            {
-                int nFore = Convert.ToInt32(Math.Round(n * limit));
-                int nAft = Convert.ToInt32(Math.Round(n * 1 - limit));
-
-                return new int[] { nFore, nAft };
             }
         }
 

@@ -130,7 +130,7 @@
             this.NACAtextBox.Name = "NACAtextBox";
             this.NACAtextBox.Size = new System.Drawing.Size(100, 23);
             this.NACAtextBox.TabIndex = 6;
-            this.NACAtextBox.Text = "2414";
+            this.NACAtextBox.Text = "2412";
             // 
             // AttackAngletextBox
             // 
